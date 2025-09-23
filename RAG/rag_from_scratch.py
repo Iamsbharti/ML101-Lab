@@ -2,7 +2,7 @@ import re
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from openai import OpenAI
-
+import requests
 
 # STEP 1: load Documents
 def load_documents():
@@ -16,7 +16,15 @@ def load_documents():
         We offer free shipping for orders above $50.
         Standard shipping rates apply otherwise.
         Orders are processed within 2 business days.
-        """
+        """,
+        "diary.txt": """
+        Dear Diary,
+        Today was a fantastic day! I went to the park and enjoyed a lovely picnic with friends.
+        The weather was perfect, and we played frisbee and laughed a lot.
+        I feel so grateful for days like this.
+        Can't wait for our next outing!
+        Love, Me
+        """,
     }
     return docs
 
@@ -79,6 +87,20 @@ Question: {query}
 Answer:"""
     return prompt
 
+# Local LLM query function (Ollama)
+def query_ollama(model: str, prompt: str):
+    print("ollama query...")
+    url = "http://localhost:11434/api/generate"
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "stream": False   # True streams tokens, False returns whole reply
+    }
+    resp = requests.post(url, json=payload)
+    resp.raise_for_status()
+    data = resp.json()
+    return data["response"]
+
 
 # STEP 6: query Loop with LLM Generation
 print("\n=== RAG System Ready ===")
@@ -102,11 +124,15 @@ while True:
     print(prompt)
 
     print("\n--- STEP 6: LLM Generation ---")
-    resp = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    answer = resp.choices[0].message.content
+    # Use OPENAI 
+    # resp = client.chat.completions.create(
+    #     model="gpt-4o-mini",
+    #     messages=[{"role": "user", "content": prompt}]
+    # )
+    # answer = resp.choices[0].message.content
+
+    # Use local LLM (Ollama)
+    answer = query_ollama("gemma3:1b", prompt)
     print("LLM Answer:", answer)
 
 
