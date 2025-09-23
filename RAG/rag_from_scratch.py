@@ -213,4 +213,37 @@ LLM Answer: Standard shipping rates apply for orders below $50. For orders above
 
 Ask me something: exit 
 Exiting SCRATCH RAG system. Goodbye!
+
+
+#############
+ollama response on diary.txt
+
+Ask me something: where did we go todfay?
+
+--- STEP 4: Retrieval ---
+[diary.txt] (score=0.257) Dear Diary, Today was a fantastic day! I went to the park and enjoyed a lovely picnic with friends. The weather was perfect, and we played frisbee and laughed a lot. I feel so grateful for days like this. Can't wait for our next outing! Love, Me
+[shipping.txt] (score=0.076) We offer free shipping for orders above $50. Standard shipping rates apply otherwise. Orders are processed within 2 business days.
+[policy.txt] (score=0.000) Our refund policy allows returns within 30 days of purchase. Items must be in original condition with proof of purchase. Warranty claims must be submitted within one year.
+
+--- STEP 5: Prompt Assembly ---
+
+You are a helpful assistant. Use the context below to answer the question.
+If the answer is not in the context, say 'I don't know'.
+
+Context:
+- Dear Diary, Today was a fantastic day! I went to the park and enjoyed a lovely picnic with friends. The weather was perfect, and we played frisbee and laughed a lot. I feel so grateful for days like this. Can't wait for our next outing! Love, Me
+- We offer free shipping for orders above $50. Standard shipping rates apply otherwise. Orders are processed within 2 business days.
+- Our refund policy allows returns within 30 days of purchase. Items must be in original condition with proof of purchase. Warranty claims must be submitted within one year.
+
+Question: where did we go todfay?
+Answer:
+
+--- STEP 6: LLM Generation ---
+ollama query...
+LLM Answer: The context states that you went to the park and enjoyed a picnic with friends.
+
+Ask me something: exit
+Exiting SCRATCH RAG system. Goodbye!
+
+
 '''
