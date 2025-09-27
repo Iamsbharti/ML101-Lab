@@ -12,16 +12,18 @@ docs = loader.load()
 print(f"\n=== STEP 1: Loaded {len(docs)} pages from PDF")
 
 # STEP 2: Chunking
-splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
 chunks = splitter.split_documents(docs)
 print(f"=== STEP 2: Split into {len(chunks)} chunks")
 
 # STEP 3: Embeddings
 embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+print(f"=== STEP 3: Created embeddings")
 
 # STEP 4: Store in Vector DB
 vectorDb = Chroma.from_documents(chunks, embedding=embeddings, persist_directory="./chroma_db")
 retriever = vectorDb.as_retriever(search_kwargs={"k": 3})
+print(f"=== STEP 4: Stored embeddings into vector db")
 
 # STEP 5: LLM Setup
 llm = OllamaLLM(model="gemma3:4b")
@@ -46,7 +48,7 @@ qa = RetrievalQA.from_chain_type(
 )
 
 # STEP 7: Query Loop with Debugging
-print("\n=== RAG System Ready ::")
+print("\n=== Step 5: RAG System Ready")
 while True:
     query = input("\nAsk a question (or type 'exit'): ")
     if query.lower() == "exit":
@@ -69,15 +71,40 @@ while True:
 '''
 Results on Resume Reader
 
-Ask a question (or type 'exit'): what is his experience?
+
+=== STEP 1: Loaded 2 pages from PDF
+=== STEP 2: Split into 10 chunks
+=== STEP 3: Created embeddings
+=== STEP 4: Stored embeddings into vector db
+
+=== Step 5: RAG System Ready
+
+Ask a question (or type 'exit'): what is users email id?
 
 --- LLM Answer ---
-He worked on PCF-hosted web applications, designed and developed product features, and built Microservices for a chatbot facilitating password resets and account management. He has experience with Full Stack Java, MERN stack, Spring Boot, RESTful web services, Microservices, and Event-Driven Solutions.
+I don't know.
+
+Ask a question (or type 'exit'): what is saurabh's email?
+
+--- LLM Answer ---
+saurabhbharti9@gmail.com
+
+
+Ask a question (or type 'exit'): what was done in bhubaneswar,India?
+
+--- LLM Answer ---
+Saurabh Bharti studied at the Biju Patnaik University of Technology in Bhubaneswar, India.
+
+Ask a question (or type 'exit'): what was the timeline of bhubaneshwar,india?
+
+--- LLM Answer ---
+I don't know.
 
 Ask a question (or type 'exit'): what was done in boeing training library?
 
 --- LLM Answer ---
-Implemented and optimized core features for a secure, cloud-native content distribution system with seamless upload/download workflows and a proof-of-concept video streaming module.
+Implemented and optimized core features for a secure, cloud-native content distribution system with seamless upload/download workflows and a proof-of-concept video streaming module. Enhanced Azure infrastructure to support high-throughput processing and scalability for enterprise-wide content delivery.
 
-Ask a question (or type 'exit'): 
+Ask a question (or type 'exit'): exit
+Exiting.
 '''
